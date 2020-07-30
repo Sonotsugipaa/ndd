@@ -1,0 +1,31 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-exe",
+            "type": "shell",
+            "command": "./build.sh ${input:flags} ${input:build_type}",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ],
+    "inputs": [
+        {
+            "id": "build_type",
+            "description": "The building profile.\nPossible values: \"debug\", \"profile\".",
+            "default": "debug",
+            "type": "promptString"
+        },
+        {
+            "id": "flags",
+            "description": "Build flags.\nCurrently, the only possible flag is \"-r\".",
+            "default": "",
+            "type": "promptString"
+        }
+    ]
+}

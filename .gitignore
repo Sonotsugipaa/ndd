@@ -1,0 +1,5 @@
+# Build ddirectories
+debug/
+release/
+release-dbginfo/
+release-size/
