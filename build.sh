@@ -16,22 +16,38 @@ function reset-cache {
 	esac
 }
 
-function run-cmake {
-	cmake --build . || return 1
+function build {
+	case "${options}" in
+		*i*)
+			mv build/bin/ndd /usr/bin/ndd || return 1;;
+		*)
+			cmake --build . || return 1;;
+	esac
 }
 
 function process-arg {
 	mkdir -p "$1" \
 	&& cd "$1" \
 	&& reset-cache "$2" \
-	&& run-cmake \
+	&& build \
 	|| return 1
 }
 
-if [[ "$1" = '-r' || "$1" = '--rm-cache' ]]; then
-	add-opt r
-	shift 1
-fi
+arg="$1"
+while [[ -n "$arg" && "$arg" != '--' ]]; do
+	case "$arg" in
+		-*)
+			if [[ "$arg" = '-r' || "$arg" = '--rm-cache' ]]; then
+				add-opt r;  fi
+			if [[ "$arg" = '-i' || "$arg" = '--install' ]]; then
+				add-opt i;  fi
+			shift 1
+			arg="$1";;
+		*)
+			arg='--';;
+	esac
+done
+unset arg
 
 unset error
 while [[ -n "$1" ]]; do
