@@ -30,5 +30,5 @@
 	target_link_libraries(ndd baseconvert_lib)
 
 	add_library(baseconvert_lib STATIC
-		${PROJECT_SOURCE_DIR}/shlib/baseconvert.cpp)
+		${PROJECT_SOURCE_DIR}/runtime/baseconvert.cpp)
 
