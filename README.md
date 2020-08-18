@@ -45,6 +45,7 @@ of times; they are read from left to right. If `ndd` is used without arguments, 
 |---|:---|---|---|
 | 0b | 2 | 0b1000000 | 0b is a known prefix, but it's not valid everywhere. |
 | 0 | 8 | 0100, 000100 | Any number of `0` digits at the beginning will imply an octal representation. |
+| 0o | 8 | 0o100 | |
 | 0d | 10 | 0d64 | This prefix is almost never used, and, apparently, rarely valid. |
 | 0x | 16 | 0x40 | |
 

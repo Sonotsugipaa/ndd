@@ -22,6 +22,7 @@ namespace ndd {
 	 *  -  0b* = radix 2
 	 *  -  0B* = radix 2
 	 *  -  0* = radix 8
+	 *  -  0o* = radix 8
 	 *  -  0d* = radix 10 (unusual)
 	 *  -  0D* = radix 10 (unusual)
 	 *  -  0x* = radix 16
@@ -41,6 +42,8 @@ namespace ndd {
 				return 2;
 			} else if(c == 'd' || c == 'D') {
 				return 10;
+			} else if(c == 'o' || c == 'O') {
+				return 8;
 			} else {
 				if(radix_length != nullptr)  *radix_length = 1+sign;
 				return 8;
