@@ -8,7 +8,7 @@
 
 ## A simple command-line number representation converter, implemented in C++
 
-`ndd` can be used to convert the number representations on a whim, without having to pick a calculator or asking [Google](https://duckduckgo.com/). It's a standalone executable file, and only references the C++ standard library.
+`ndd` can be used to convert a number's representation on a whim, without having to pick a calculator or asking [Google](https://duckduckgo.com/). It's a standalone executable file, and only references the C++ standard library.
 
 ## Usage
 
