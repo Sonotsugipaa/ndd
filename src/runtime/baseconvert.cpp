@@ -48,7 +48,7 @@ namespace ndd {
 		std::string arg = *args;
 		unsigned radix_src = 10;
 		unsigned radix_dest = 10;
-		bool success;
+		bool success = true;
 		if(*args != nullptr) {
 			success = ::process_arg(
 				arg, radix_src, radix_dest, success? std::cout : std::cerr);

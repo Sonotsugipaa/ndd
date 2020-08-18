@@ -61,12 +61,12 @@ separated by spaces, while the actual output will result in multiple lines.
 | `ndd 0b101` | `5` | | |
 | `ndd from=2 101` | `5` | | |
 | `ndd from=16 0b101` | `5` | | |
-| `ndd 5 to=2` | `101` | | `to=2` should come before the \<number\> argument. |
-| `ndd 5 to=16` | `101` | | `to=16` should come before the \<number\> argument. |
+| `ndd 5 to=2` | `5` | | `to=2` should come before the \<number\> argument. |
+| `ndd 5 to=16` | `5` | | `to=16` should come before the \<number\> argument. |
 | `ndd to=10 0b101 0x101` | `5 257` | | |
 | `ndd to=10 from=2 101 from=16 101` | `5 257` | | |
 | `ndd to=0b10 0b10` | `10` | | The "to" argument uses a prefix. |
-| `ndd to=0x10 0x10` | `10` | | Same as above; note how this setup always results in `10`. |
+| `ndd to=0x10 0x10` | `10` | | |
 | `ndd to=010 from=8 10` | `10` | | |
 | `ndd to=010 010` | `10` | | |
 | `ndd this_is_nan 10 0b10` | | `10 2` | An invalid argument causes the following arguments to be printed to stderr. |
