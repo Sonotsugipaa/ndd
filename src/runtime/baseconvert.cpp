@@ -12,7 +12,8 @@ namespace {
 			unsigned& radix_src, unsigned& radix_dest,
 			std::ostream& out
 	) {
-		unsigned number;
+		using num_t = int64_t;
+		num_t number;
 		bool success = false;
 		if(arg.starts_with("from=")) {
 			success = ndd::parse(arg.substr(5), &number);
@@ -25,11 +26,20 @@ namespace {
 			if(success)  radix_dest = number;
 		} else {
 			unsigned radix_length;
-			unsigned radix = ndd::parse_prefix(arg, &radix_length);
+			bool neg;
+			unsigned radix = ndd::parse_prefix(arg, &radix_length, &neg);
 			if(radix_length == 0)  radix = radix_src;
-			if(! ndd::parse(arg.substr(radix_length), &number, radix)) {
-				return false; }
-			std::string str_out = ndd::to_string(number, radix_dest);
+			std::string arg_no_prefix = arg.substr(radix_length);
+			std::string str_out;
+			if(arg[0] == '-') {
+				str_out = "-";
+			}
+			if(! ndd::parse<num_t, std::string, false>(
+				arg_no_prefix, &number, radix)
+			) {
+				return false;
+			}
+			str_out += ndd::to_string(number, radix_dest);
 			if(! str_out.empty()) {
 				out << str_out << std::endl;
 				return true;

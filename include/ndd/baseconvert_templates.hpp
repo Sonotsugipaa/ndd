@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <limits>
 #include <cstdint>
 
 #include "debug.hpp"
@@ -16,7 +17,10 @@ namespace ndd {
 	 * have a prefix; the result is undefined if the string is empty or
 	 * an invalid number representation.
 	 * If radix_length is not nullptr, then the length of the prefix is
-	 * written into *radix_length.
+	 * written into *radix_length;
+	 * if negative is not nullptr, then its value will be set to either
+	 * true (if the prefix begins with '-') or false (otherwise).
+	 * A '+' or a '-' before the prefix will be considered part of it.
 	 *
 	 * Supported radix patterns:
 	 *  -  0b* = radix 2
@@ -29,9 +33,15 @@ namespace ndd {
 	 *  -  0X* = radix 16 */
 
 	template<typename str_t>
-	unsigned parse_prefix(const str_t str, unsigned* radix_length = nullptr) {
+	unsigned parse_prefix(
+			const str_t str,
+			unsigned* radix_length = nullptr,
+			bool* negative = nullptr
+	) {
 		unsigned sign = (str[0] == '-' || str[0] == '+')? 1 : 0;
-		if(radix_length != nullptr)  *radix_length = 0;
+		if(negative != nullptr) {
+			*negative = str[0] == '-'; }
+		if(radix_length != nullptr)  *radix_length = 0+sign;
 		char c = str[0+sign];
 		if(c == '0') {
 			if(radix_length != nullptr)  *radix_length = 2+sign;
@@ -108,17 +118,27 @@ namespace ndd {
 		if(radix > MAX_RADIX)  return "";
 		std::string str;
 		bool neg = x < 0;
-		if(neg)  str = "-";
+		if(neg) {
+			x = -x; }
 		while(x != 0) {
-			str.push_back(digit_to_char(x % radix));
+			char digit_ch = digit_to_char(x % radix);
+			if(digit_ch == '\0') {
+				return ""; }
+			str.push_back(digit_ch);
 			x /= radix;
 		}
-		// the digits have to be reversed
-		unsigned swap_until = str.length() / 2;
-		for(unsigned i=0; i < swap_until; ++i) {
-			if(i != ((str.length() - i) - 1)) {
-				std::swap(str[i], str[(str.length() - i) - 1]);
+		if(str.length() == 0) {
+			str = "0";
+		} else {
+			// the digits have to be reversed
+			unsigned swap_until = str.length() / 2;
+			for(unsigned i=0; i < swap_until; ++i) {
+				if(i != ((str.length() - i) - 1)) {
+					std::swap(str[i], str[(str.length() - i) - 1]);
+				}
 			}
+			if(neg) {
+				str = '-' + str; }
 		}
 		return str;
 	}
@@ -132,18 +152,26 @@ namespace ndd {
 	 * *destination (unless *destination == nullptr) and the function
 	 * returns true. */
 
-	template<typename int_t, typename str_t>
+	template<
+		typename int_t, typename str_t,
+		bool check_negative = std::numeric_limits<int_t>::is_signed>
 	bool parse(const str_t x, int_t* destination) {
 		unsigned i;
 		unsigned radix = parse_prefix(x, &i);
+		int mul = 1;
 		if(radix == 0)  radix = 10;
-		bool neg = x[0] == '-' || x[0] == '+';
 		int digit;
 		*destination = 0;
+		if constexpr(check_negative)
+		if(x[0] == '-') {
+			++i;  mul = -1; }
 		while(x[i] != '\0') {
 			digit = char_to_digit(x[i]);
-			if(digit < 0 || digit > radix) {
-				return false; }
+			if(digit < 0 || digit > (radix-1)) {
+				if constexpr(check_negative) {
+					*destination *= mul; }
+				return false;
+			}
 			*destination = (*destination * radix) + digit;
 			++i;
 		}
@@ -160,15 +188,24 @@ namespace ndd {
 	 * *destination (unless *destination == nullptr) and the function
 	 * returns true. */
 
-	template<typename int_t, typename str_t>
+	template<
+		typename int_t, typename str_t,
+		bool check_negative = std::numeric_limits<int_t>::is_signed>
 	bool parse(const str_t x, int_t* destination, unsigned radix, char delim = '\0') {
 		unsigned i = 0;
 		int digit;
+		int mul = 1;
 		*destination = 0;
+		if constexpr(check_negative)
+		if(x[0] == '-') {
+			++i;  mul = -1; }
 		while(x[i] != delim) {
 			digit = char_to_digit(x[i]);
-			if(digit < 0 || digit > radix) {
-				return false; }
+			if(digit < 0 || digit > (radix-1)) {
+				if constexpr(check_negative) {
+					*destination *= mul; }
+				return false;
+			}
 			*destination = (*destination * radix) + digit;
 			++i;
 		}
